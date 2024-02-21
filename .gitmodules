@@ -1,0 +1,3 @@
+[submodule "bothq-lib"]
+	path = bothq-lib
+	url = https://github.com/FA22B/bothq-lib
