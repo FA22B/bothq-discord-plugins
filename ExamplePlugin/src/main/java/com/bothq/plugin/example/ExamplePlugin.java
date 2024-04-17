@@ -1,7 +1,7 @@
 package com.bothq.plugin.example;
 
-import com.bothq.lib.abstractions.PluginBase;
-import com.bothq.lib.annotations.DiscordEventListener;
+import com.bothq.lib.annotation.DiscordEventListener;
+import com.bothq.lib.plugin.PluginBase;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.ChannelType;

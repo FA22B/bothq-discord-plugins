@@ -1,6 +1,6 @@
 package com.bothq.plugin.example;
 
-import com.bothq.lib.annotations.DiscordEventListener;
+import com.bothq.lib.annotation.DiscordEventListener;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
