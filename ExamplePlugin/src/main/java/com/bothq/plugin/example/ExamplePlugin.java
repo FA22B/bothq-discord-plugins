@@ -2,6 +2,8 @@ package com.bothq.plugin.example;
 
 import com.bothq.lib.annotation.DiscordEventListener;
 import com.bothq.lib.plugin.PluginBase;
+import com.bothq.lib.plugin.config.IConfig;
+import com.bothq.lib.plugin.config.component.ICheckBox;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -16,6 +18,15 @@ public class ExamplePlugin extends PluginBase {
 
     @Getter
     private final String description = "An example plugin.";
+
+    private ICheckBox testCheckBox;
+
+    @Override
+    public void createConfig(IConfig config) {
+
+        // Create a test check box
+        testCheckBox = config.addCheckBox("test", "Test Checkbox", false);
+    }
 
     @Override
     public void pluginLoad() {
