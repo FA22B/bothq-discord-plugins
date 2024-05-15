@@ -41,21 +41,35 @@ public class ExamplePlugin extends PluginBase {
     @DiscordEventListener(MessageReceivedEvent.class)
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 
-        // Echo back received message only in direct messages
-        if (event.getChannelType() != ChannelType.PRIVATE) {
+        // Only handle guild text channel messages here
+        if (event.getChannelType() != ChannelType.TEXT) {
             return;
         }
 
-        // Skip if the message author is the bot instance
-        if (event.getAuthor().getIdLong() == jda.getSelfUser().getIdLong()) {
+        // Check for message skip conditions
+        if (event.getAuthor().getIdLong() == jda.getSelfUser().getIdLong() // Self user ID check
+                || event.getAuthor().isBot() // Bot check (this includes the self user, but we keep it in here for example purposes)
+                || event.getAuthor().isSystem()) { // System message check (eg. user join)
             return;
         }
+
+        // Get the channel
+        var channel = event.getChannel().asGuildMessageChannel();
 
         // Get the raw message content
         var messageContent = event.getMessage().getContentRaw();
 
         // Send the echo message
-        event.getChannel().sendMessage("Echo: " + messageContent).queue();
+        channel.sendMessage("Echo: " + messageContent).queue();
+
+        // Get the guild ID
+        var guildId = channel.getGuild().getIdLong();
+
+        // Get the checkbox state
+        var checkBoxState = testCheckBox.get(guildId).getValue();
+
+        // Send test checkbox state
+        channel.sendMessage("Checkbox state: " + checkBoxState).queue();
 
     }
 }
