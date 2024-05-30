@@ -49,9 +49,13 @@ public class ExamplePlugin extends PluginBase {
         // Check for message skip conditions
         if (event.getAuthor().getIdLong() == jda.getSelfUser().getIdLong() // Self user ID check
                 || event.getAuthor().isBot() // Bot check (this includes the self user, but we keep it in here for example purposes)
-                || event.getAuthor().isSystem()) { // System message check (eg. user join)
+                || event.getMessage().getType().isSystem() // System message check (eg. user join)
+                || event.isWebhookMessage()) {
             return;
         }
+
+        log.info(event.getAuthor().getEffectiveName());
+
 
         // Get the channel
         var channel = event.getChannel().asGuildMessageChannel();
@@ -70,6 +74,9 @@ public class ExamplePlugin extends PluginBase {
 
         // Send test checkbox state
         channel.sendMessage("Checkbox state: " + checkBoxState).queue();
+
+
+        // channel.sendMessage("```json\n" + event.getRawData().toPrettyString() + "```").queue();
 
     }
 }
