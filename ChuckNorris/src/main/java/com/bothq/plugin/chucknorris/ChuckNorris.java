@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 @Getter
@@ -53,8 +54,9 @@ public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 
     if (messageContent.equalsIgnoreCase("!chucknorris")) {
         try {
-            URL url = new URL("https://api.chucknorris.io/jokes/random");
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            URI uri = new URI("https://api.chucknorris.io/jokes/random");
+            URL url = uri.toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
 
@@ -70,7 +72,7 @@ public void onMessageReceived(@NotNull MessageReceivedEvent event) {
                 event.getChannel().sendMessage(joke).queue();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("An error occurred while fetching a Chuck Norris joke: ", ex);
         }
     }
 }
