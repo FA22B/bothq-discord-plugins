@@ -3,28 +3,24 @@ package com.bothq.plugin.chucknorris;
 import com.bothq.lib.annotation.DiscordEventListener;
 import com.bothq.lib.plugin.PluginBase;
 import com.bothq.lib.plugin.config.IConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
-
-import org.json.JSONObject;
 
 @Getter
 @Slf4j
 public abstract class ChuckNorris extends PluginBase {
 
-    // The name of the plugin
     private final String name = "ChuckNorris";
-
-    // The description of the plugin
     private final String description = "A plugin that tells Chuck Norris jokes.";
 
-    // Create the plugin configuration
     @Override
     public void createConfig(IConfig config) {
         log.info("{} config created!", name);
@@ -40,55 +36,42 @@ public abstract class ChuckNorris extends PluginBase {
         log.info("{} unloaded!", name);
     }
 
-    @DiscordEventListener(MessageReceivedEvent.class)
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+@DiscordEventListener(MessageReceivedEvent.class)
+public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 
-        // Only handle guild text channel messages here
-        if (event.getChannelType() != ChannelType.TEXT) {
-            return;
-        }
+    if (event.getChannelType() != ChannelType.TEXT) {
+        return;
+    }
 
-        // Check for message skip conditions
-        if (event.getAuthor().getIdLong() == jda.getSelfUser().getIdLong() // Self user ID check
-                || event.getAuthor().isBot() // Bot check (this includes the self user, but we keep it in here for example purposes)
-                || event.getAuthor().isSystem()) { // System message check (eg. user join)
-            return;
-        }
+    if (event.getAuthor().getIdLong() == jda.getSelfUser().getIdLong()
+            || event.getAuthor().isBot()
+            || event.getAuthor().isSystem()) {
+        return;
+    }
 
-        // Get the raw message content
-        var messageContent = event.getMessage().getContentRaw();
+    var messageContent = event.getMessage().getContentRaw();
 
-        // Check if the message is a request for a Chuck Norris joke
-        if (messageContent.equalsIgnoreCase("!chucknorris")) {
-            try {
-                URL url = new URL("https://api.chucknorris.io/jokes/random");
-                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.connect();
+    if (messageContent.equalsIgnoreCase("!chucknorris")) {
+        try {
+            URL url = new URL("https://api.chucknorris.io/jokes/random");
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
 
-                int responseCode = conn.getResponseCode();
+            int responseCode = conn.getResponseCode();
 
-                if(responseCode != 200) {
-                    throw new RuntimeException("HttpResponseCode: " +responseCode);
-                } else {
-                    String inline = "";
-                    Scanner scanner = new Scanner(url.openStream());
+            if(responseCode != 200) {
+                throw new RuntimeException("HttpResponseCode: " +responseCode);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode json = mapper.readTree(url.openStream());
+                String joke = json.get("value").asText();
 
-                    while(scanner.hasNext()) {
-                        inline += scanner.nextLine();
-                    }
-
-                    scanner.close();
-
-                    JSONObject json = new JSONObject(inline);
-                    String joke = json.getString("value");
-
-                    // Send the joke
-                    event.getChannel().sendMessage(joke).queue();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                event.getChannel().sendMessage(joke).queue();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
+}
 }
