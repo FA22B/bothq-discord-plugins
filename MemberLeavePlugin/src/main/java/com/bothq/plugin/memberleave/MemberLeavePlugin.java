@@ -1,4 +1,4 @@
-package com.bothq.plugin.example;
+package com.bothq.plugin.memberleave;
 
 import com.bothq.lib.annotation.DiscordEventListener;
 import com.bothq.lib.plugin.PluginBase;
