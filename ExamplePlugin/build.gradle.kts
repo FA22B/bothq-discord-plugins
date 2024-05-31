@@ -34,4 +34,6 @@ tasks.test {
 
 tasks.shadowJar {
     exclude("../bothq-lib")
+
+    destinationDirectory.set(File(projectDir, "../out"))
 }
